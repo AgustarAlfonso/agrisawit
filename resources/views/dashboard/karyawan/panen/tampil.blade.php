@@ -59,6 +59,8 @@
                      icon: 'error',
                      title: 'Gagal!',
                      text: '{{ session('gagalDihapus') }}',
+                     confirmButtonText: 'Selesai', // Teks tombol dengan ikon
+                     confirmButtonColor: '#28a745', 
                  });
              </script>
          @endif
