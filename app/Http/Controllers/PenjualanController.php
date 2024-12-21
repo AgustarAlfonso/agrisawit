@@ -57,18 +57,36 @@ class PenjualanController extends Controller
                 'tanggalPenjualan' => 'Tanggal penjualan sudah ada. Harap gunakan tanggal lain. Data penjualan: ' . $penjualanExists->jumlahTerjual . ' kg',
             ])->withInput();
         }
-
-        // Validasi stok hingga tanggal penjualan
-        $stokHinggaTanggal = Stok::where('tanggalBerubah', '<=', $request->tanggalPenjualan)
-                                 ->sum('jumlahPerubahan');
     
-        if ($request->jumlahTerjual > $stokHinggaTanggal) {
-            return redirect()->back()->withErrors([
-                'jumlahTerjual' => 'Jumlah terjual melebihi stok yang tersedia hingga tanggal tersebut. Stok tersedia: ' . $stokHinggaTanggal . ' kg',
-            ])->withInput();
+        // Ambil semua perubahan stok dan tambahkan data baru untuk simulasi
+        $perubahanStok = Stok::orderBy('tanggalBerubah', 'asc')->get();
+    
+        // Tambahkan data baru sebagai simulasi
+        $perubahanStok->push((object)[
+            'tanggalBerubah' => $request->tanggalPenjualan,
+            'jumlahPerubahan' => -$request->jumlahTerjual,
+        ]);
+    
+        // Urutkan kembali dengan tanggal perubahan
+        $perubahanStok = $perubahanStok->sortBy('tanggalBerubah');
+    
+        // Hitung stok kumulatif dan validasi
+        $stokKumulatif = 0;
+        foreach ($perubahanStok as $stok) {
+            $stokKumulatif += $stok->jumlahPerubahan;
+        
+            // Konversi tanggalBerubah menjadi format d-m-Y
+            $tanggalFormat = \Carbon\Carbon::parse($stok->tanggalBerubah)->format('d-m-Y');
+        
+            if ($stokKumulatif < 0) {
+                return redirect()->back()->withErrors([
+                    'jumlahTerjual' => 'Penjualan ini menyebabkan stok menjadi negatif pada tanggal ' . $tanggalFormat . '. Stok tersedia: ' . ($stokKumulatif + $request->jumlahTerjual) . ' kg',
+                ])->withInput();
+            }
         }
+        
     
-        // Buat data penjualan baru tanpa menimpa
+        // Simpan data penjualan
         Penjualan::create([
             'jumlahTerjual' => $request->jumlahTerjual,
             'totalHarga' => $request->totalHarga,
@@ -77,6 +95,7 @@ class PenjualanController extends Controller
     
         return redirect()->route('dashboard.karyawan.penjualan')->with('berhasilDibuat', 'Laporan penjualan berhasil disimpan!');
     }
+    
 
     public function ubahPenjualan($id)
     {
@@ -84,7 +103,7 @@ class PenjualanController extends Controller
         return view('dashboard.karyawan.penjualan.ubah', compact('penjualan'));
     }
 
-    public function perbaruiDataAkun(Request $request, $id)
+    public function perbaruiDataPenjualan(Request $request, $id)
     {
         $request->validate([
             'jumlahTerjual' => 'required|integer|min:1',
@@ -101,7 +120,7 @@ class PenjualanController extends Controller
             'tanggalPenjualan.date' => 'Tanggal penjualan tidak valid.',
             'tanggalPenjualan.before_or_equal' => 'Tanggal penjualan tidak boleh di masa depan.',
         ]);
-
+    
         // Validasi jika ada tanggal yang sama (abaikan data yang sedang diubah)
         $penjualanExists = Penjualan::where('tanggalPenjualan', $request->tanggalPenjualan)
                                     ->where('id', '!=', $id)
@@ -111,25 +130,45 @@ class PenjualanController extends Controller
                 'tanggalPenjualan' => 'Tanggal penjualan sudah ada. Harap gunakan tanggal lain. Data penjualan: ' . $penjualanExists->jumlahTerjual . ' ton',
             ])->withInput();
         }
-
+    
+        // Validasi stok kumulatif hingga tanggal penjualan
+        $stokKumulatif = 0;
+        $stokPerubahan = Stok::where('tanggalBerubah', '<=', $request->tanggalPenjualan)
+                             ->orderBy('tanggalBerubah', 'asc')
+                             ->get();
+    
+        foreach ($stokPerubahan as $stok) {
+            $stokKumulatif += $stok->jumlahPerubahan;
+    
+            // Konversi tanggalBerubah menjadi format d-m-Y
+            $tanggalFormat = \Carbon\Carbon::parse($stok->tanggalBerubah)->format('d-m-Y');
+    
+            if ($stokKumulatif < 0) {
+                return redirect()->back()->withErrors([
+                    'jumlahTerjual' => 'Penjualan ini menyebabkan stok menjadi negatif pada tanggal ' . $tanggalFormat . '. Stok tersedia: ' . ($stokKumulatif + $request->jumlahTerjual) . ' kg',
+                ])->withInput();
+            }
+        }
+    
         // Validasi stok hingga tanggal penjualan
         $stokHinggaTanggal = Stok::where('tanggalBerubah', '<=', $request->tanggalPenjualan)
                                  ->sum('jumlahPerubahan');
-
+    
         if ($request->jumlahTerjual > $stokHinggaTanggal) {
             return redirect()->back()->withErrors([
                 'jumlahTerjual' => 'Jumlah terjual melebihi stok yang tersedia hingga tanggal tersebut. Stok tersedia: ' . $stokHinggaTanggal . ' ton',
             ])->withInput();
         }
-
+    
         $penjualan = $this->ambilPenjualan($id);
         $penjualan->jumlahTerjual = $request->jumlahTerjual;
         $penjualan->totalHarga = $request->totalHarga;
         $penjualan->tanggalPenjualan = $request->tanggalPenjualan;
         $penjualan->save();
-
+    
         return redirect()->route('dashboard.karyawan.penjualan')->with('berhasilDibuat', 'Laporan penjualan berhasil diperbarui!');
     }
+    
 
     public function hapusPenjualan($id)
     {

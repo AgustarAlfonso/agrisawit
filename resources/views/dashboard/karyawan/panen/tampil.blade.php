@@ -53,11 +53,16 @@
              </script>
              @endif
              
-              @if (session('gagalDihapus'))
-              <script>
-                  swal("Gagal!", "{{ session('gagalDihapus') }}", "error");
-              </script>
-                @endif
+             @if (session('gagalDihapus'))
+             <script>
+                 Swal.fire({
+                     icon: 'error',
+                     title: 'Gagal!',
+                     text: '{{ session('gagalDihapus') }}',
+                 });
+             </script>
+         @endif
+         
                            
  
              <div class="overflow-x-auto">

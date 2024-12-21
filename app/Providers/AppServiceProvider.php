@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Panen::observe(PanenObserver::class);
-        Penjualan::observe(PenjualanObserver::class);
+        // Panen::observe(PanenObserver::class);
+        // Penjualan::observe(PenjualanObserver::class);
     }
 }

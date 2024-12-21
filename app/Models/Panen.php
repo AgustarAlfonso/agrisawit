@@ -12,6 +12,11 @@ class Panen extends Model
         'jumlahPanen', 'tanggalPanen' 
     ];
 
+    public function stok()
+    {
+        return $this->hasOne(Stok::class);
+    }
+
     
 
 }

@@ -54,7 +54,7 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::post ('/dashboard/karyawan/penjualan/tambah/submit', [PenjualanController::class, 'simpanDataPenjualan'])->name('dashboard.karyawan.penjualan.tambah.submit');
     Route::get('/dashboard/karyawan/penjualan/hapus/{id}', [PenjualanController::class, 'hapuspenjualan'])->name('dashboard.karyawan.penjualan.hapus');
     Route::get ('/dashboard/karyawan/penjualan/ubah/{id}', [PenjualanController::class, 'ubahpenjualan'])->name('dashboard.karyawan.penjualan.ubah');
-    Route::post ('/dashboard/karyawan/penjualan/ubah/submit/{id}', [PenjualanController::class, 'perbaruiDataAkun'])->name('dashboard.karyawan.penjualan.ubah.submit');
+    Route::post ('/dashboard/karyawan/penjualan/ubah/submit/{id}', [PenjualanController::class, 'perbaruiDataPenjualan'])->name('dashboard.karyawan.penjualan.ubah.submit');
 
 
     Route::get('/dashboard/karyawan/stok', [StokController::class, 'tampilStok'])->name('dashboard.karyawan.stok');

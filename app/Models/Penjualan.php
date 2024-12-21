@@ -24,6 +24,11 @@ class Penjualan extends Model
         'totalHarga' => 'decimal:2',
     ];
 
+    public function stok()
+    {
+        return $this->hasOne(Stok::class);
+    }
+
     
 
 }

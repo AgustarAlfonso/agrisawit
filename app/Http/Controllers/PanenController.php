@@ -107,14 +107,13 @@ class PanenController extends Controller
         // Ambil data panen saat ini
         $panen = $this->ambilPanen($id);
         $stokSaatIni = Stok::sum('jumlahPerubahan'); // Menghitung total stok saat ini
-
+        
         // Validasi jumlah panen agar stok tidak negatif
         $selisihPanen = $request->jumlahPanen - $panen->jumlahPanen; // Perubahan jumlah panen
         if ($stokSaatIni + $selisihPanen < 0) {
-            return redirect()->back()->withErrors([
-                'jumlahPanen' => 'Perubahan jumlah panen akan menyebabkan stok menjadi negatif.',
-            ])->withInput();
+            return redirect()->back()->with('gagalDihapus', 'Perubahan jumlah panen akan menyebabkan stok menjadi negatif.')->withInput();
         }
+        
 
         // Mengupdate data panen
         $panen->jumlahPanen = $request->jumlahPanen;
