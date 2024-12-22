@@ -16,7 +16,7 @@ return new class extends Migration
                 $table->string('jenisPerubahan'); // contoh: "panen", "penjualan"
                 $table->integer('jumlahPerubahan'); // nilai positif untuk panen, negatif untuk penjualan
                 $table->integer('totalStok'); // stok setelah perubahan
-                $table->timestamp('tanggalBerubah')->useCurrent(); // tanggal perubahan
+                $table->date('tanggalBerubah'); // tanggal perubahan
                 $table->timestamps();
             });
     }
