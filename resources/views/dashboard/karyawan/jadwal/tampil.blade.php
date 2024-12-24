@@ -55,24 +55,55 @@
              @endif
 
 
-              @if ($upcomingJadwals->isNotEmpty())
-              <script>
-                  const upcomingPendingJadwals = @json($upcomingJadwals);
-          
-                  let message = "Pengingat! Jadwal dengan status 'pending' dalam 7 hari ke depan:\n";
-                                    upcomingPendingJadwals.forEach(jadwal => {
-                        const tanggal = new Date(jadwal.tanggal); // Konversi string ke objek Date
-                        const formattedTanggal = tanggal.toLocaleDateString('id-ID', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric'
-                        }); // Format ke d-m-y
-                        message += `• ${jadwal.jenisPerawatan} pada ${formattedTanggal}\n`;
-                    });
-          
-                  swal("Pengingat!", message, "info");
-              </script>
-                @endif
+             @if ($upcomingJadwals->isNotEmpty())
+             <script>
+                 const upcomingPendingJadwals = @json($upcomingJadwals);
+             
+                 let message = "Jadwal dengan status 'pending' dalam 7 hari ke depan: \n";
+                 upcomingPendingJadwals.forEach(jadwal => {
+                     const tanggal = new Date(jadwal.tanggal); // Konversi string ke objek Date
+                     const formattedTanggal = tanggal.toLocaleDateString('id-ID', {
+                         day: '2-digit',
+                         month: '2-digit',
+                         year: 'numeric'
+                     }); // Format ke d-m-y
+                     message += `• ${jadwal.jenisPerawatan} pada ${formattedTanggal} \n`;
+                 });
+             
+                 Swal.fire({
+                     text: message,
+                     icon: 'info',
+                     confirmButtonText: 'OK',
+                     confirmButtonColor: '#28a745'
+                 });
+             </script>
+             @endif
+
+             @if (session('berhasil'))
+             <script>
+             Swal.fire({
+                 title: '{{ session('berhasil') }}',
+                 imageUrl: '/images/icon-berhasil.png', // Ikon khusus
+                 imageWidth: 100, // Lebar gambar
+                 imageHeight: 100, // Tinggi gambar
+                 confirmButtonText: 'Selesai', // Teks tombol dengan ikon
+                 confirmButtonColor: '#28a745', 
+             });
+             </script>
+             @endif
+             
+             @if (session('gagal'))
+             <script>
+             Swal.fire({
+                 title: 'Gagal!',
+                 html: '{!! implode("<br>", session("gagal")) !!}',
+                 icon: 'error',
+                 confirmButtonText: 'OK',
+                 confirmButtonColor: '#dc3545',
+             });
+             </script>
+             @endif
+             
                                      
  
              <div class="overflow-x-auto">

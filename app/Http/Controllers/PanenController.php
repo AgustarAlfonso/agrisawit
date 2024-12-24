@@ -9,15 +9,29 @@ use Illuminate\Support\Carbon;
 
 class PanenController extends Controller
 {
-    public function ambilSemuaPanen()
-    {
-        return Panen::orderBy('tanggalPanen', 'desc')->paginate(5);
-    }
+  
 
     public function ambilPanen($id)
     {
         return Panen::findOrFail($id);
     }
+
+    private function berhasilPopUp($pesan)
+    {
+        session()->flash('berhasil', $pesan);
+    }
+    
+    private function gagalPopUp($errors)
+    {
+        // Menyimpan pesan error ke session untuk ditampilkan di popup
+        session()->flash('gagal', $errors);
+    }
+
+    public function ambilSemuaPanen()
+    {
+        return Panen::orderBy('tanggalPanen', 'desc')->paginate(5);
+    }
+    
 
     public function tampilPanen()
     {
@@ -29,36 +43,49 @@ class PanenController extends Controller
     {
         return view('dashboard.karyawan.panen.tambah');
     }
-
     public function simpanDatapanen(Request $request)
     {
-        // Validasi input
-        $request->validate([
-            'jumlahPanen' => 'required|integer|min:0',
-            'tanggalPanen' => 'required|date|before_or_equal:today',
-        ], [
-            'jumlahPanen.required' => 'Jumlah panen wajib diisi.',
-            'jumlahPanen.integer' => 'Jumlah panen harus berupa angka.',
-            'jumlahPanen.min' => 'Jumlah panen tidak boleh bernilai negatif.',
-            'tanggalPanen.required' => 'Tanggal panen wajib diisi.',
-            'tanggalPanen.date' => 'Tanggal panen harus berupa tanggal yang valid.',
-            'tanggalPanen.before_or_equal' => 'Tanggal panen tidak boleh berada di masa depan.',
-        ]);
-
-        $panenExists = Panen::where('tanggalPanen', $request->tanggalPanen)->first();
-        if ($panenExists) {
-            return redirect()->back()->withErrors([
-                'tanggalPanen' => 'Tanggal panen sudah ada dengan jumlah panen sebanyak ' . $panenExists->jumlahPanen . '. Harap gunakan tanggal lain.',
-            ])->withInput();
+        try {
+            // Validasi input
+            $request->validate([
+                'jumlahPanen' => 'required|integer|min:0',
+                'tanggalPanen' => 'required|date|before_or_equal:today',
+            ], [
+                'jumlahPanen.required' => 'Jumlah panen wajib diisi.',
+                'jumlahPanen.integer' => 'Jumlah panen harus berupa angka.',
+                'jumlahPanen.min' => 'Jumlah panen tidak boleh bernilai negatif.',
+                'tanggalPanen.required' => 'Tanggal panen wajib diisi.',
+                'tanggalPanen.date' => 'Tanggal panen harus berupa tanggal yang valid.',
+                'tanggalPanen.before_or_equal' => 'Tanggal panen tidak boleh berada di masa depan.',
+            ]);
+    
+            // Cek jika tanggal panen sudah ada
+            $panenExists = Panen::where('tanggalPanen', $request->tanggalPanen)->first();
+            if ($panenExists) {
+                // Tampilkan popup error jika tanggal sudah ada
+                $this->gagalPopUp([
+                    'Tanggal panen sudah ada dengan jumlah panen sebanyak ' . $panenExists->jumlahPanen . '. Harap gunakan tanggal lain.',
+                ]);
+                return redirect()->back()->withInput();
+            }
+    
+            // Simpan data panen baru
+            $panen = new Panen();
+            $panen->jumlahPanen = $request->jumlahPanen;
+            $panen->tanggalPanen = $request->tanggalPanen;
+            $panen->save();
+    
+            // Tampilkan popup sukses
+            $this->berhasilPopUp('Data panen berhasil disimpan!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Tampilkan popup error jika validasi gagal
+            $this->gagalPopUp($e->validator->errors()->all());
+            return redirect()->back()->withInput();
         }
-
-        $panen = new Panen();
-        $panen->jumlahPanen = $request->jumlahPanen;
-        $panen->tanggalPanen = $request->tanggalPanen;
-        $panen->save();
-
-        return redirect()->route('dashboard.karyawan.panen')->with('berhasilDibuat', 'Data panen berhasil disimpan!');
+    
+        return redirect()->route('dashboard.karyawan.panen');
     }
+    
 
     public function hapusPanen($id)
     {
@@ -102,67 +129,83 @@ class PanenController extends Controller
     }
     public function perbaruiDataPanen(Request $request, $id)
     {
-        $request->validate([
-            'jumlahPanen' => 'required|integer|min:0',
-            'tanggalPanen' => 'required|date|before_or_equal:today',
-        ], [
-            'jumlahPanen.required' => 'Jumlah panen wajib diisi.',
-            'jumlahPanen.integer' => 'Jumlah panen harus berupa angka.',
-            'jumlahPanen.min' => 'Jumlah panen tidak boleh bernilai negatif.',
-            'tanggalPanen.required' => 'Tanggal panen wajib diisi.',
-            'tanggalPanen.date' => 'Tanggal panen harus berupa tanggal yang valid.',
-            'tanggalPanen.before_or_equal' => 'Tanggal panen tidak boleh berada di masa depan.',
-        ]);
+        try {
+            // Validasi input
+            $request->validate([
+                'jumlahPanen' => 'required|integer|min:0',
+                'tanggalPanen' => 'required|date|before_or_equal:today',
+            ], [
+                'jumlahPanen.required' => 'Jumlah panen wajib diisi.',
+                'jumlahPanen.integer' => 'Jumlah panen harus berupa angka.',
+                'jumlahPanen.min' => 'Jumlah panen tidak boleh bernilai negatif.',
+                'tanggalPanen.required' => 'Tanggal panen wajib diisi.',
+                'tanggalPanen.date' => 'Tanggal panen harus berupa tanggal yang valid.',
+                'tanggalPanen.before_or_equal' => 'Tanggal panen tidak boleh berada di masa depan.',
+            ]);
     
-        $panen = $this->ambilPanen($id);
+            $panen = $this->ambilPanen($id);
     
-        // Validasi jika ada tanggal yang sama (abaikan data yang sedang diubah)
-        $panenExists = Panen::where('tanggalPanen', $request->tanggalPanen)
-            ->where('id', '!=', $id)
-            ->first();
-        if ($panenExists) {
-            return redirect()->back()->withErrors([
-                'tanggalPanen' => 'Tanggal panen sudah ada dengan jumlah panen sebanyak ' . $panenExists->jumlahPanen . '. Harap gunakan tanggal lain.',
-            ])->withInput();
-        }
+            // Validasi jika ada tanggal yang sama (abaikan data yang sedang diubah)
+            $panenExists = Panen::where('tanggalPanen', $request->tanggalPanen)
+                ->where('id', '!=', $id)
+                ->first();
     
-        // Ambil semua perubahan stok (termasuk panen yang sedang diubah)
-        $stok = Stok::where('id', '!=', $panen->stok->id)
-            ->orWhere('panen_id', $id)
-            ->get();
-    
-        // Simulasikan stok berdasarkan tanggal perubahan
-        $stokSimulasi = $stok->map(function ($item) use ($request, $panen) {
-            // Jika item adalah panen yang sedang diubah, gunakan tanggal dan jumlah baru
-            if ($item->panen_id == $panen->id) {
-                $item->tanggalBerubah = $request->tanggalPanen;
-                $item->jumlahPerubahan = $request->jumlahPanen;
+            if ($panenExists) {
+                // Tampilkan popup error jika tanggal sudah ada
+                $this->gagalPopUp([
+                    'Tanggal panen sudah ada dengan jumlah panen sebanyak ' . $panenExists->jumlahPanen . '. Harap gunakan tanggal lain.',
+                ]);
+                return redirect()->back()->withInput();
             }
-            return $item;
-        })->sortBy('tanggalBerubah'); // Urutkan stok berdasarkan tanggal
     
-        // Hitung stok secara kronologis
-        $stokTotal = 0;
-        foreach ($stokSimulasi as $item) {
-            // Pastikan tanggalBerubah adalah instance Carbon
-            $tanggalBerubah = Carbon::parse($item->tanggalBerubah);
+            // Ambil semua perubahan stok (termasuk panen yang sedang diubah)
+            $stok = Stok::where('id', '!=', $panen->stok->id)
+                ->orWhere('panen_id', $id)
+                ->get();
     
-            $stokTotal += $item->jumlahPerubahan;
-            if ($stokTotal < 0) {
-                return redirect()->back()->withErrors([
-                    'tanggalPanen' => 'Perubahan tanggal menyebabkan stok menjadi negatif pada tanggal ' 
+            // Simulasikan stok berdasarkan tanggal perubahan
+            $stokSimulasi = $stok->map(function ($item) use ($request, $panen) {
+                // Jika item adalah panen yang sedang diubah, gunakan tanggal dan jumlah baru
+                if ($item->panen_id == $panen->id) {
+                    $item->tanggalBerubah = $request->tanggalPanen;
+                    $item->jumlahPerubahan = $request->jumlahPanen;
+                }
+                return $item;
+            })->sortBy('tanggalBerubah'); // Urutkan stok berdasarkan tanggal
+    
+            // Hitung stok secara kronologis
+            $stokTotal = 0;
+            foreach ($stokSimulasi as $item) {
+                // Pastikan tanggalBerubah adalah instance Carbon
+                $tanggalBerubah = Carbon::parse($item->tanggalBerubah);
+    
+                $stokTotal += $item->jumlahPerubahan;
+                if ($stokTotal < 0) {
+                    // Tampilkan popup error jika stok menjadi negatif
+                    $this->gagalPopUp([
+                        'Perubahan tanggal menyebabkan stok menjadi negatif pada tanggal ' 
                         . $tanggalBerubah->format('d-m-Y') 
                         . ' dengan stok menjadi ' . $stokTotal . ' kg.',
-                ])->withInput();
+                    ]);
+                    return redirect()->back()->withInput();
+                }
             }
+    
+            // Jika validasi lolos, update panen
+            $panen->jumlahPanen = $request->jumlahPanen;
+            $panen->tanggalPanen = $request->tanggalPanen;
+            $panen->update();
+    
+            // Tampilkan popup sukses
+            $this->berhasilPopUp('Data panen berhasil diperbarui!');
+    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Tampilkan popup error jika validasi gagal
+            $this->gagalPopUp($e->validator->errors()->all());
+            return redirect()->back()->withInput();
         }
     
-        // Jika validasi lolos, update panen
-        $panen->jumlahPanen = $request->jumlahPanen;
-        $panen->tanggalPanen = $request->tanggalPanen;
-        $panen->update();
-    
-        return redirect()->route('dashboard.karyawan.panen')->with('berhasilDibuat', 'Data panen berhasil diperbarui!');
+        return redirect()->route('dashboard.karyawan.panen');
     }
     
     

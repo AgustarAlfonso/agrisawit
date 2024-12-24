@@ -20,6 +20,30 @@ class LaporanController extends Controller
         return view('dashboard.karyawan.laporan.tampil');
     }
 
+    private function ambilDataPanen($bulan, $tahun)
+    {
+        return Panen::whereMonth('tanggalPanen', $bulan)
+                    ->whereYear('tanggalPanen', $tahun)
+                    ->orderBy('tanggalPanen', 'desc')
+                    ->get();
+    }
+
+    private function ambilDataStok($bulan, $tahun)
+    {
+        return Stok::whereMonth('tanggalBerubah', $bulan)
+                   ->whereYear('tanggalBerubah', $tahun)
+                   ->orderBy('tanggalBerubah', 'desc')
+                   ->get();
+    }
+
+    private function ambilDataPenjualan($bulan, $tahun)
+    {
+        return Penjualan::whereMonth('tanggalPenjualan', $bulan)
+                        ->whereYear('tanggalPenjualan', $tahun)
+                        ->orderBy('tanggalPenjualan', 'desc')
+                        ->get();
+    }
+
     public function previewLaporanPemilik(Request $request)
     {
         $jenisLaporan = $request->get('jenis_laporan');
@@ -30,40 +54,22 @@ class LaporanController extends Controller
 
         switch ($jenisLaporan) {
             case 'panen':
-                $data = Panen::whereMonth('tanggalPanen', $bulanLaporan)
-                             ->whereYear('tanggalPanen', $tahunLaporan)
-                             ->orderBy('tanggalPanen', 'desc')
-                             ->get();
+                $data = $this->ambilDataPanen($bulanLaporan, $tahunLaporan);
                 $viewPath = "dashboard.pemilik.laporan.panen";
                 break;
             case 'stok':
-                $data = Stok::whereMonth('tanggalBerubah', $bulanLaporan)
-                            ->whereYear('tanggalBerubah', $tahunLaporan)
-                            ->orderBy('tanggalBerubah', 'desc')
-                            ->get();
+                $data = $this->ambilDataStok($bulanLaporan, $tahunLaporan);
                 $viewPath = "dashboard.pemilik.laporan.stok";
                 break;
             case 'penjualan':
-                $data = Penjualan::whereMonth('tanggalPenjualan', $bulanLaporan)
-                                 ->whereYear('tanggalPenjualan', $tahunLaporan)
-                                 ->orderBy('tanggalPenjualan', 'desc')
-                                 ->get();
+                $data = $this->ambilDataPenjualan($bulanLaporan, $tahunLaporan);
                 $viewPath = "dashboard.pemilik.laporan.penjualan";
                 break;
             case 'seluruh_laporan':
                 $data = [
-                    'panen' => Panen::whereMonth('tanggalPanen', $bulanLaporan)
-                                    ->whereYear('tanggalPanen', $tahunLaporan)
-                                    ->orderBy('tanggalPanen', 'desc')
-                                    ->get(),
-                    'stok' => Stok::whereMonth('tanggalBerubah', $bulanLaporan)
-                                  ->whereYear('tanggalBerubah', $tahunLaporan)
-                                  ->orderBy('tanggalBerubah', 'desc')
-                                  ->get(),
-                    'penjualan' => Penjualan::whereMonth('tanggalPenjualan', $bulanLaporan)
-                                            ->whereYear('tanggalPenjualan', $tahunLaporan)
-                                            ->orderBy('tanggalPenjualan', 'desc')
-                                            ->get(),
+                    'panen' => $this->ambilDataPanen($bulanLaporan, $tahunLaporan),
+                    'stok' => $this->ambilDataStok($bulanLaporan, $tahunLaporan),
+                    'penjualan' => $this->ambilDataPenjualan($bulanLaporan, $tahunLaporan),
                 ];
 
                 $totalStok = $data['stok']->sum('jumlahPerubahan');
@@ -89,43 +95,25 @@ class LaporanController extends Controller
 
         switch ($jenisLaporan) {
             case 'panen':
-                $data = Panen::whereMonth('tanggalPanen', $bulanLaporan)
-                             ->whereYear('tanggalPanen', $tahunLaporan)
-                             ->orderBy('tanggalPanen', 'desc')
-                             ->get();
+                $data = $this->ambilDataPanen($bulanLaporan, $tahunLaporan);
                 $filename = "Laporan_Panen_{$tahunLaporan}_{$bulanLaporan}.pdf";
                 $viewPath = "dashboard.pemilik.laporan.panen";
                 break;
             case 'stok':
-                $data = Stok::whereMonth('tanggalBerubah', $bulanLaporan)
-                            ->whereYear('tanggalBerubah', $tahunLaporan)
-                            ->orderBy('tanggalBerubah', 'desc')
-                            ->get();
+                $data = $this->ambilDataStok($bulanLaporan, $tahunLaporan);
                 $filename = "Laporan_Stok_{$tahunLaporan}_{$bulanLaporan}.pdf";
                 $viewPath = "dashboard.pemilik.laporan.stok";
                 break;
             case 'penjualan':
-                $data = Penjualan::whereMonth('tanggalPenjualan', $bulanLaporan)
-                                 ->whereYear('tanggalPenjualan', $tahunLaporan)
-                                 ->orderBy('tanggalPenjualan', 'desc')
-                                 ->get();
+                $data = $this->ambilDataPenjualan($bulanLaporan, $tahunLaporan);
                 $filename = "Laporan_Penjualan_{$tahunLaporan}_{$bulanLaporan}.pdf";
                 $viewPath = "dashboard.pemilik.laporan.penjualan";
                 break;
             case 'seluruh_laporan':
                 $data = [
-                    'panen' => Panen::whereMonth('tanggalPanen', $bulanLaporan)
-                                    ->whereYear('tanggalPanen', $tahunLaporan)
-                                    ->orderBy('tanggalPanen', 'desc')
-                                    ->get(),
-                    'stok' => Stok::whereMonth('tanggalBerubah', $bulanLaporan)
-                                  ->whereYear('tanggalBerubah', $tahunLaporan)
-                                  ->orderBy('tanggalBerubah', 'desc')
-                                  ->get(),
-                    'penjualan' => Penjualan::whereMonth('tanggalPenjualan', $bulanLaporan)
-                                            ->whereYear('tanggalPenjualan', $tahunLaporan)
-                                            ->orderBy('tanggalPenjualan', 'desc')
-                                            ->get(),
+                    'panen' => $this->ambilDataPanen($bulanLaporan, $tahunLaporan),
+                    'stok' => $this->ambilDataStok($bulanLaporan, $tahunLaporan),
+                    'penjualan' => $this->ambilDataPenjualan($bulanLaporan, $tahunLaporan),
                 ];
 
                 $totalStok = $data['stok']->sum('jumlahPerubahan');
@@ -150,22 +138,13 @@ class LaporanController extends Controller
 
         switch ($jenisLaporan) {
             case 'panen':
-                $data = Panen::whereMonth('tanggalPanen', $bulanLaporan)
-                             ->whereYear('tanggalPanen', $tahunLaporan)
-                             ->orderBy('tanggalPanen', 'desc')
-                             ->get();
+                $data = $this->ambilDataPanen($bulanLaporan, $tahunLaporan);
                 break;
             case 'stok':
-                $data = Stok::whereMonth('tanggalBerubah', $bulanLaporan)
-                            ->whereYear('tanggalBerubah', $tahunLaporan)
-                            ->orderBy('tanggalBerubah', 'desc')
-                            ->get();
+                $data = $this->ambilDataStok($bulanLaporan, $tahunLaporan);
                 break;
             case 'penjualan':
-                $data = Penjualan::whereMonth('tanggalPenjualan', $bulanLaporan)
-                                 ->whereYear('tanggalPenjualan', $tahunLaporan)
-                                 ->orderBy('tanggalPenjualan', 'desc')
-                                 ->get();
+                $data = $this->ambilDataPenjualan($bulanLaporan, $tahunLaporan);
                 break;
             default:
                 abort(404, 'Jenis laporan tidak ditemukan.');
@@ -186,24 +165,15 @@ class LaporanController extends Controller
 
         switch ($jenisLaporan) {
             case 'panen':
-                $data = Panen::whereMonth('tanggalPanen', $bulanLaporan)
-                             ->whereYear('tanggalPanen', $tahunLaporan)
-                             ->orderBy('tanggalPanen', 'desc')
-                             ->get();
+                $data = $this->ambilDataPanen($bulanLaporan, $tahunLaporan);
                 $filename = "Laporan_Panen_{$tahunLaporan}_{$bulanLaporan}.pdf";
                 break;
             case 'stok':
-                $data = Stok::whereMonth('tanggalBerubah', $bulanLaporan)
-                            ->whereYear('tanggalBerubah', $tahunLaporan)
-                            ->orderBy('tanggalBerubah', 'desc')
-                            ->get();
+                $data = $this->ambilDataStok($bulanLaporan, $tahunLaporan);
                 $filename = "Laporan_Stok_{$tahunLaporan}_{$bulanLaporan}.pdf";
                 break;
             case 'penjualan':
-                $data = Penjualan::whereMonth('tanggalPenjualan', $bulanLaporan)
-                                 ->whereYear('tanggalPenjualan', $tahunLaporan)
-                                 ->orderBy('tanggalPenjualan', 'desc')
-                                 ->get();
+                $data = $this->ambilDataPenjualan($bulanLaporan, $tahunLaporan);
                 $filename = "Laporan_Penjualan_{$tahunLaporan}_{$bulanLaporan}.pdf";
                 break;
             default:

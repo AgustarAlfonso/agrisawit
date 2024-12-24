@@ -5,6 +5,18 @@
 @section('content')
 <div class="container-fluid mt-4 px-4"> <!-- Full-width container -->
     <div class="row">
+                     
+        @if (session('gagal'))
+        <script>
+        Swal.fire({
+            title: 'Gagal!',
+            html: '{!! implode("<br>", session("gagal")) !!}',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#dc3545',
+        });
+        </script>
+        @endif
         <div class="col-md-10 mx-auto"> <!-- Centered content -->
 
             <div class="mx-auto max-w-screen-xl px-4 py-2 sm:px-6 lg:px-8">

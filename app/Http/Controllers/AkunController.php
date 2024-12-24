@@ -31,32 +31,48 @@ class AkunController extends Controller
         return view('dashboard.pemilik.akun.tambah');
     }
 
+    private function berhasilPopUp($pesan)
+    {
+        session()->flash('berhasil', $pesan);
+    }
+    
+    private function gagalPopUp($errors)
+    {
+        session()->flash('gagal', $errors->all());
+    }
+        
+
     public function simpanDataAkun(Request $request)
     {
-        $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:akun,username', 'regex:/^\S*$/u'],
-            'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/'],
-            'role' => ['required', 'string'],
-        ], [
-            'username.required' => 'Username wajib diisi.',
-            'username.unique' => 'Username sudah digunakan.',
-            'username.regex' => 'Username tidak boleh mengandung spasi.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal harus 8 karakter.',
-            'password.regex' => 'Password harus mengandung huruf dan angka.',
-            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
-            'role.required' => 'Role wajib dipilih.',
-        ]);
-
-        $akun = new Akun();
-        $akun->username = $request->username;
-        $akun->name = $request->name;
-        $akun->password = bcrypt($request->password);
-        $akun->role = $request->role;
-        $akun->save();
-
-        return redirect()->route('dashboard.pemilik.akun')->with('berhasilDibuat', 'Selamat akun berhasil disimpan');
-    }
+        try{
+            $request->validate([
+                'username' => ['required', 'string', 'max:255', 'unique:akun,username', 'regex:/^\S*$/u'],
+                'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/'],
+                'role' => ['required', 'string'],
+            ], [
+                'username.required' => 'Username wajib diisi.',
+                'username.unique' => 'Username sudah digunakan.',
+                'username.regex' => 'Username tidak boleh mengandung spasi.',
+                'password.required' => 'Password wajib diisi.',
+                'password.min' => 'Password minimal harus 8 karakter.',
+                'password.regex' => 'Password harus mengandung huruf dan angka.',
+                'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+                'role.required' => 'Role wajib dipilih.',
+            ]);
+    
+            $akun = new Akun();
+            $akun->username = $request->username;
+            $akun->name = $request->name;
+            $akun->password = bcrypt($request->password);
+            $akun->role = $request->role;
+            $akun->save();
+            $this->berhasilPopUp('Akun berhasil disimpan.');
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $this->gagalPopUp($e->validator->errors());
+            return redirect()->back()->withInput();
+        }
+       
+        return redirect()->route('dashboard.pemilik.akun');    }
 
     public function hapusAkun($id)
     {
@@ -74,40 +90,48 @@ class AkunController extends Controller
 
     public function perbaruiDataAkun(Request $request, $id)
     {
-        $request->validate([
-            'username' => [
-                'required',
-                'string',
-                'max:255',
-                'unique:akun,username,' . $id, 
-                'regex:/^\S*$/u' 
-            ],
-            'password' => [
-                'required',
-                'string',
-                'min:8',
-                'confirmed', 
-                'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/', 
-            ],
-            'role' => ['required', 'string'],
-        ], [
-            'username.required' => 'Username wajib diisi.',
-            'username.unique' => 'Username sudah digunakan.',
-            'username.regex' => 'Username tidak boleh mengandung spasi.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal harus 8 karakter.',
-            'password.regex' => 'Password harus mengandung huruf dan angka.',
-            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
-            'role.required' => 'Role wajib dipilih.',
-        ]);
-    
-        $akun = $this->ambilAkun($id); // Menggunakan ambilAkun()
-        $akun->username = $request->username;
-        $akun->name = $request->name;
-        $akun->password = bcrypt($request->password);
-        $akun->role = $request->role;
-        $akun->save();
-    
-        return redirect()->route('dashboard.pemilik.akun')->with('berhasilDiubah', 'Akun berhasil diperbarui.');
+
+        try{
+            $request->validate([
+                'username' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    'unique:akun,username,' . $id, 
+                    'regex:/^\S*$/u' 
+                ],
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'confirmed', 
+                    'regex:/^(?=.*[a-zA-Z])(?=.*\d).+$/', 
+                ],
+                'role' => ['required', 'string'],
+            ], [
+                'username.required' => 'Username wajib diisi.',
+                'username.unique' => 'Username sudah digunakan.',
+                'username.regex' => 'Username tidak boleh mengandung spasi.',
+                'password.required' => 'Password wajib diisi.',
+                'password.min' => 'Password minimal harus 8 karakter.',
+                'password.regex' => 'Password harus mengandung huruf dan angka.',
+                'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+                'role.required' => 'Role wajib dipilih.',
+            ]);
+        
+            $akun = $this->ambilAkun($id); // Menggunakan ambilAkun()
+            $akun->username = $request->username;
+            $akun->name = $request->name;
+            $akun->password = bcrypt($request->password);
+            $akun->role = $request->role;
+            $akun->save();
+
+            $this->berhasilPopUp('Akun berhasil diperbarui.');
+        }catch(\Illuminate\Validation\ValidationException $e){
+            $this->gagalPopUp($e->validator->errors());
+            return redirect()->back()->withInput();
+        }
+
+        return redirect()->route('dashboard.pemilik.akun');
     }
 }

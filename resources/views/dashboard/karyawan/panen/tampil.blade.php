@@ -64,6 +64,31 @@
                  });
              </script>
          @endif
+
+         @if (session('berhasil'))
+         <script>
+         Swal.fire({
+             title: '{{ session('berhasil') }}',
+             imageUrl: '/images/icon-berhasil.png', // Ikon khusus
+             imageWidth: 100, // Lebar gambar
+             imageHeight: 100, // Tinggi gambar
+             confirmButtonText: 'Selesai', // Teks tombol dengan ikon
+             confirmButtonColor: '#28a745', 
+         });
+         </script>
+         @endif
+         
+         @if (session('gagal'))
+         <script>
+         Swal.fire({
+             title: 'Gagal!',
+             html: '{!! implode("<br>", session("gagal")) !!}',
+             icon: 'error',
+             confirmButtonText: 'OK',
+             confirmButtonColor: '#dc3545',
+         });
+         </script>
+         @endif
          
                            
  

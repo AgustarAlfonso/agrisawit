@@ -13,6 +13,16 @@ class JadwalController extends Controller
     {
         return Jadwal::orderBy('tanggal', 'desc')->paginate($perPage);
     }
+
+    private function berhasilPopUp($pesan)
+    {
+        session()->flash('berhasil', $pesan);
+    }
+    
+    private function gagalPopUp($errors)
+    {
+        session()->flash('gagal', $errors->all());
+    }
     
 
     // Fungsi untuk mengambil jadwal berdasarkan ID
@@ -38,24 +48,33 @@ class JadwalController extends Controller
 
     public function simpanDataJadwal(Request $request)
     {
-        $request->validate([
-            'jenisPerawatan' => 'required|string|max:255',
-            'tanggal' => 'required|date|after_or_equal:' . Carbon::now()->toDateString(),
-        ], [
-            'jenisPerawatan.required' => 'Jenis perawatan harus diisi.',
-            'jenisPerawatan.max' => 'Jenis perawatan maksimal 255 karakter.',
-            'tanggal.required' => 'Tanggal harus diisi.',
-            'tanggal.date' => 'Format tanggal tidak valid.',
-            'tanggal.after_or_equal' => 'Tanggal tidak boleh di masa lalu.',
-        ]);
+        try{
+            $request->validate([
+                'jenisPerawatan' => 'required|string|max:255',
+                'tanggal' => 'required|date|after_or_equal:' . Carbon::now()->toDateString(),
+            ], [
+                'jenisPerawatan.required' => 'Jenis perawatan harus diisi.',
+                'jenisPerawatan.max' => 'Jenis perawatan maksimal 255 karakter.',
+                'tanggal.required' => 'Tanggal harus diisi.',
+                'tanggal.date' => 'Format tanggal tidak valid.',
+                'tanggal.after_or_equal' => 'Tanggal tidak boleh di masa lalu.',
+            ]);
+        
+            $jadwal = new Jadwal();
+            $jadwal->jenisPerawatan = $request->jenisPerawatan;
+            $jadwal->tanggal = $request->tanggal;
+            $jadwal->status = 'Pending';
+            $jadwal->save();
+
+            $this->berhasilPopUp('Jadwal berhasil disimpan!');
+
+        } catch(\Illuminate\Validation\ValidationException $e){
+            $this->gagalPopUp($e->validator->errors());
+            return redirect()->back()->withInput();
+        }
+
     
-        $jadwal = new Jadwal();
-        $jadwal->jenisPerawatan = $request->jenisPerawatan;
-        $jadwal->tanggal = $request->tanggal;
-        $jadwal->status = 'Pending';
-        $jadwal->save();
-    
-        return redirect()->route('dashboard.karyawan.jadwal')->with('berhasilDibuat', 'Jadwal berhasil disimpan!');
+        return redirect()->route('dashboard.karyawan.jadwal');
     }
 
     public function hapusJadwal($id)
@@ -76,23 +95,34 @@ class JadwalController extends Controller
 
     public function perbaruiDataJadwal(Request $request, $id)
     {
-        $request->validate([
-            'jenisPerawatan' => 'required|string|max:255',
-            'status' => 'required|string',
-        ], [
-            'jenisPerawatan.required' => 'Jenis perawatan harus diisi.',
-            'jenisPerawatan.max' => 'Jenis perawatan maksimal 255 karakter.',
-            'tanggal.required' => 'Tanggal harus diisi.',
-            'tanggal.date' => 'Format tanggal tidak valid.',
-            'status.required' => 'Status harus diisi.',
-        ]);
+        try{
 
-        // Menggunakan ambilJadwal untuk mendapatkan jadwal berdasarkan ID
-        $jadwal = $this->ambilJadwal($id);
-        $jadwal->status = $request->status;
-        $jadwal->update();
+            $request->validate([
+                'jenisPerawatan' => 'required|string|max:255',
+                'status' => 'required|string',
+            ], [
+                'jenisPerawatan.required' => 'Jenis perawatan harus diisi.',
+                'jenisPerawatan.max' => 'Jenis perawatan maksimal 255 karakter.',
+                'tanggal.required' => 'Tanggal harus diisi.',
+                'tanggal.date' => 'Format tanggal tidak valid.',
+                'status.required' => 'Status harus diisi.',
+            ]);
+    
+            // Menggunakan ambilJadwal untuk mendapatkan jadwal berdasarkan ID
+            $jadwal = $this->ambilJadwal($id);
+            $jadwal->status = $request->status;
+            $jadwal->update();
 
-        return redirect()->route('dashboard.karyawan.jadwal')->with('berhasilDibuat', 'Jadwal berhasil diperbarui!');    
+            $this->berhasilPopUp('Jadwal berhasil diperbarui!');
+
+        } catch(\Illuminate\Validation\ValidationException $e){
+            $this->gagalPopUp($e->validator->errors());
+            return redirect()->back()->withInput();
+        }
+
+       
+
+        return redirect()->route('dashboard.karyawan.jadwal');    
     }
 }
 
