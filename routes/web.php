@@ -18,11 +18,14 @@ Route::get('/errors/403', function () {
     return view('errors.403');
 });
 
+Route::get('/lockscreen', [LoginController::class, 'lockScreen'])->middleware('auth')->name('lockscreen');
+Route::post('/lockscreen/submit', [LoginController::class, 'unlockScreen'])->name('lockscreen.submit');'lockscreen';
+
 Route::get('/go-back', [loginController::class, 'goBack'])->name('go-back');
 
 
 
-Route::middleware(['auth', 'role:pemilik'])->group(function () {
+Route::middleware(['auth', 'role:pemilik', 'lockscreen.protected'])->group(function () {
 
     Route::get('/dashboard/pemilik/index', [DashboardController::class, 'tampilDashboardPemilik'])->name('dashboard.pemilik.index');
     Route::get('/dashboard/pemilik/akun', [AkunController::class, 'tampilAkun'])->name('dashboard.pemilik.akun');
@@ -38,7 +41,7 @@ Route::middleware(['auth', 'role:pemilik'])->group(function () {
        
 });
 
-Route::middleware(['auth', 'role:karyawan'])->group(function () {
+Route::middleware(['auth', 'role:karyawan', 'lockscreen.protected'])->group(function () {
     Route::get('/dashboard/karyawan/index', [DashboardController::class, 'tampilDashboardKaryawan'])->name('dashboard.karyawan.index');
 
     Route::get('/dashboard/karyawan/panen', [PanenController::class, 'tampilPanen'])->name('dashboard.karyawan.panen');

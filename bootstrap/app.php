@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo('');
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'lockscreen.protected' => \App\Http\Middleware\LockScreenProtection::class,
         ]);
        
     })

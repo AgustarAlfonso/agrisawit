@@ -31,7 +31,25 @@
         </main>
     </div>
         
+    <script>
+        let idleTime = 0;
+        const idleTimeout = 30; // waktu idle dalam detik (1 menit)
 
+        function resetIdleTime() {
+            idleTime = 0;
+        }
+
+        document.onmousemove = resetIdleTime;
+        document.onkeydown = resetIdleTime;
+
+        setInterval(function() {
+            idleTime++;
+            if (idleTime >= idleTimeout) {
+                window.location.href = '/lockscreen'; // arahkan ke halaman lockscreen setelah 1 menit tidak aktif
+            }
+        }, 1000); // cek setiap detik
+    </script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>

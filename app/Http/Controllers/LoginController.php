@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
@@ -59,11 +60,36 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        session()->forget('unlocked'); // Menghapus session unlocked
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
     }
+
+    public function lockScreen()
+    {
+        session(['locked' => true]); // Menandakan bahwa layar terkunci
+        return view('lockscreen'); // tampilkan halaman lock screen
+    }
+    
+    public function unlockScreen(Request $request)
+    {
+        $user = Auth::user();
+    
+        if (Hash::check($request->password, $user->password)) {
+            // Memeriksa role dan mengarahkan pengguna ke dashboard yang sesuai
+            if ($user->role == 'karyawan') {
+                session()->forget('locked'); // Menghapus session lock screen                return redirect()->route('dashboard.karyawan.index'); // halaman dashboard untuk karyawan
+            } elseif ($user->role == 'pemilik') {
+                session()->forget('locked'); // Menghapus session lock screen                return redirect()->route('dashboard.karyawan.index'); // halaman dashboard untuk karyawan
+                return redirect()->route('dashboard.pemilik.index'); // halaman dashboard untuk pemilik
+            }
+        }
+    
+        return back()->withErrors(['password' => 'Password salah.']); // kembalikan dengan error jika password salah
+    }
+
 }
 
 ?>
