@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Panen;
 use App\Models\Penjualan;
 use App\Models\Stok;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class LaporanController extends Controller
 {
@@ -124,6 +127,18 @@ class LaporanController extends Controller
                 abort(404, 'Jenis laporan tidak ditemukan.');
         }
 
+        $namaBulan = Carbon::createFromFormat('m', $bulanLaporan)->format('F');
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_role' => $user->role,
+                'activity_description' => "mengunduh laporan {$jenisLaporan} {$namaBulan} {$tahunLaporan}.",
+            ]);
+        } 
+
         $pdf = Pdf::loadView($viewPath, compact('data', 'bulanLaporan', 'tahunLaporan', 'totalStok'));
 
         return $pdf->download($filename);
@@ -179,6 +194,18 @@ class LaporanController extends Controller
             default:
                 abort(404, 'Jenis laporan tidak ditemukan.');
         }
+
+        $namaBulan = Carbon::createFromFormat('m', $bulanLaporan)->format('F');
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_role' => $user->role,
+                'activity_description' => "mengunduh laporan {$jenisLaporan} {$namaBulan} {$tahunLaporan}.",
+            ]);
+        } 
 
         $viewPath = "dashboard.karyawan.laporan.$jenisLaporan";
         $pdf = Pdf::loadView($viewPath, compact('data', 'bulanLaporan', 'tahunLaporan'));
