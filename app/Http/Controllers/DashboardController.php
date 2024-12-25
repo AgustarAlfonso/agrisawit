@@ -27,7 +27,7 @@ class DashboardController extends Controller
         $jumlahPenjualanTerakhir = Penjualan::latest('tanggalPenjualan')->value('jumlahTerjual') ?? 0;
 
         // Kirim data ke view
-        return view('dashboard.pemilik.index', compact(
+        return view('dashboard.pemilik.halamandashboardpemilik', compact(
             'jadwalMendatang',
             'totalStok',
             'jumlahPanenTerakhir',
@@ -52,7 +52,7 @@ class DashboardController extends Controller
         $jumlahPenjualanTerakhir = Penjualan::latest('tanggalPenjualan')->value('jumlahTerjual') ?? 0;
 
         // Kirim data ke view
-        return view('dashboard.karyawan.index', compact(
+        return view('dashboard.karyawan.HalamanDashboardKaryawan', compact(
             'jadwalMendatang',
             'totalStok',
             'jumlahPanenTerakhir',

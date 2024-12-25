@@ -33,13 +33,13 @@ class PenjualanController extends Controller
     public function tampilPenjualan()
     {
         $penjualans = $this->ambilSemuaPenjualan();
-        return view('dashboard.karyawan.penjualan.tampil', compact('penjualans'));
+        return view('dashboard.karyawan.penjualan.HalamanMengelolaPenjualan', compact('penjualans'));
     }
     
 
     public function tambahPenjualan()
     {
-        return view('dashboard.karyawan.penjualan.tambah');
+        return view('dashboard.karyawan.penjualan.HalamanTambahPenjualan');
     }
 
     public function simpanDataPenjualan(Request $request)
@@ -121,7 +121,7 @@ class PenjualanController extends Controller
     public function ubahPenjualan($id)
     {
         $penjualan = $this->ambilPenjualan($id);
-        return view('dashboard.karyawan.penjualan.ubah', compact('penjualan'));
+        return view('dashboard.karyawan.penjualan.HalamanUbahPenjualan', compact('penjualan'));
     }
     public function perbaruiDataPenjualan(Request $request, $id)
     {

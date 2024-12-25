@@ -38,12 +38,12 @@ class JadwalController extends Controller
                                  ->whereBetween('tanggal', [Carbon::now(), Carbon::now()->addDays(7)])
                                  ->get();
     
-        return view('dashboard.karyawan.jadwal.tampil', compact('jadwals', 'upcomingJadwals'));
+        return view('dashboard.karyawan.jadwal.HalamanJadwal', compact('jadwals', 'upcomingJadwals'));
     }
 
     public function tambahJadwal()
     {
-        return view('dashboard.karyawan.jadwal.tambah');
+        return view('dashboard.karyawan.jadwal.HalamanTambahJadwal');
     }
 
     public function simpanDataJadwal(Request $request)
@@ -90,7 +90,7 @@ class JadwalController extends Controller
     {
         // Menggunakan ambilJadwal untuk mendapatkan jadwal berdasarkan ID
         $jadwal = $this->ambilJadwal($id);
-        return view('dashboard.karyawan.jadwal.ubah', compact('jadwal'));
+        return view('dashboard.karyawan.jadwal.HalamanUbahJadwal', compact('jadwal'));
     }
 
     public function perbaruiDataJadwal(Request $request, $id)

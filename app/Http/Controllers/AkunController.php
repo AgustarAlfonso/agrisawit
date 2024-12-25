@@ -23,12 +23,12 @@ class AkunController extends Controller
     public function tampilAkun()
     {
         $akuns = $this->ambilSemuaAkun(); // Menggunakan ambilSemuaAkun()
-        return view('dashboard.pemilik.akun.tampil', compact('akuns'));
+        return view('dashboard.pemilik.akun.HalamanManajemenAkun', compact('akuns'));
     }
 
     public function tambahAkun()
     {
-        return view('dashboard.pemilik.akun.tambah');
+        return view('dashboard.pemilik.akun.HalamanTambahAkun');
     }
 
     private function berhasilPopUp($pesan)
@@ -85,7 +85,7 @@ class AkunController extends Controller
     public function ubahAkun($id)
     {
         $akun = $this->ambilAkun($id); // Menggunakan ambilAkun()
-        return view('dashboard.pemilik.akun.ubah', compact('akun'));
+        return view('dashboard.pemilik.akun.HalamanUbahAkun', compact('akun'));
     }
 
     public function perbaruiDataAkun(Request $request, $id)

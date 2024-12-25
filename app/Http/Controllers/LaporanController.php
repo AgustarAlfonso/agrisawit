@@ -12,12 +12,12 @@ class LaporanController extends Controller
 {
     public function tampilLaporanPemilik()
     {
-        return view('dashboard.pemilik.laporan.tampil');
+        return view('dashboard.pemilik.laporan.HalamanLaporanPemilik');
     }
 
     public function tampilLaporanKaryawan()
     {
-        return view('dashboard.karyawan.laporan.tampil');
+        return view('dashboard.karyawan.laporan.HalamanLaporanKaryawan');
     }
 
     private function ambilDataPanen($bulan, $tahun)

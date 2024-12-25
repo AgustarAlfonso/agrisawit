@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
-            background: url('/images/login-bg.png');
+            background: url('{{ asset('images/login-bg.png') }}');
             background-position: center center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -28,7 +28,7 @@
 <body class="flex items-center justify-center min-h-screen">
     <div class="max-w-md w-full p-6 card">
         <div class="flex flex-col items-center mb-8">
-            <img src="/images/icon.png" alt="AgriSawit Logo" class="w-20 h-20">
+            <img src="{{ asset('images/icon.png') }}" alt="AgriSawit Logo" class="w-20 h-20">
             <h2 class="text-xl font-semibold text-gray-800">AgriSawit</h2>
         </div>
 

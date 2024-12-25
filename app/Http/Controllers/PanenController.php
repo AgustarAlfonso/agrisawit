@@ -36,12 +36,12 @@ class PanenController extends Controller
     public function tampilPanen()
     {
         $panens = $this->ambilSemuaPanen();
-        return view('dashboard.karyawan.panen.tampil', compact('panens'));
+        return view('dashboard.karyawan.panen.HalamanDataPanen', compact('panens'));
     }
 
     public function tambahPanen()
     {
-        return view('dashboard.karyawan.panen.tambah');
+        return view('dashboard.karyawan.panen.HalamanTambahPanen');
     }
     public function simpanDatapanen(Request $request)
     {
@@ -125,7 +125,7 @@ class PanenController extends Controller
     public function ubahPanen($id)
     {
         $panen = $this->ambilPanen($id);
-        return view('dashboard.karyawan.panen.ubah', compact('panen'));
+        return view('dashboard.karyawan.panen.halamanubahpanen', compact('panen'));
     }
     public function perbaruiDataPanen(Request $request, $id)
     {

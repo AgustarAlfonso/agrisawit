@@ -15,7 +15,7 @@ class StokController extends Controller
     public function tampilStok()
     {
         $stok = $this->ambilSemuaStok();  // Memanggil fungsi ambilSemuaStok()
-        return view('dashboard.karyawan.stok.tampil', compact('stok'));
+        return view('dashboard.karyawan.stok.HalamanLaporanStok', compact('stok'));
     }
     
     

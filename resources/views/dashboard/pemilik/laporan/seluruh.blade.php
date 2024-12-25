@@ -61,7 +61,6 @@
         <tbody>
             @foreach ($data['penjualan'] as $penjualan)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
                     <td>{{ number_format($penjualan->jumlahTerjual ?? 0, 0, ',', '.') }}</td>                    
                     <td>Rp{{ number_format($penjualan->totalHarga, 2, ',', '.') }}</td>
                     <td>{{ \Carbon\Carbon::parse($penjualan->tanggalPenjualan ?? '')->format('d-m-Y') }}</td>   

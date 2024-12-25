@@ -11,7 +11,7 @@ use App\Http\Controllers\StokController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('login');
+    return view('HalamanLogin');
 });
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/errors/403', function () {
