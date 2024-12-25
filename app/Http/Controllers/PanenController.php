@@ -60,14 +60,14 @@ class PanenController extends Controller
             ]);
     
             // Cek jika tanggal panen sudah ada
-            $panenExists = Panen::where('tanggalPanen', $request->tanggalPanen)->first();
-            if ($panenExists) {
-                // Tampilkan popup error jika tanggal sudah ada
-                $this->gagalPopUp([
-                    'Tanggal panen sudah ada dengan jumlah panen sebanyak ' . $panenExists->jumlahPanen . '. Harap gunakan tanggal lain.',
-                ]);
-                return redirect()->back()->withInput();
-            }
+            // $panenExists = Panen::where('tanggalPanen', $request->tanggalPanen)->first();
+            // if ($panenExists) {
+            //     // Tampilkan popup error jika tanggal sudah ada
+            //     $this->gagalPopUp([
+            //         'Tanggal panen sudah ada dengan jumlah panen sebanyak ' . $panenExists->jumlahPanen . '. Harap gunakan tanggal lain.',
+            //     ]);
+            //     return redirect()->back()->withInput();
+            // }
     
             // Simpan data panen baru
             $panen = new Panen();
@@ -146,17 +146,17 @@ class PanenController extends Controller
             $panen = $this->ambilPanen($id);
     
             // Validasi jika ada tanggal yang sama (abaikan data yang sedang diubah)
-            $panenExists = Panen::where('tanggalPanen', $request->tanggalPanen)
-                ->where('id', '!=', $id)
-                ->first();
+            // $panenExists = Panen::where('tanggalPanen', $request->tanggalPanen)
+            //     ->where('id', '!=', $id)
+            //     ->first();
     
-            if ($panenExists) {
-                // Tampilkan popup error jika tanggal sudah ada
-                $this->gagalPopUp([
-                    'Tanggal panen sudah ada dengan jumlah panen sebanyak ' . $panenExists->jumlahPanen . '. Harap gunakan tanggal lain.',
-                ]);
-                return redirect()->back()->withInput();
-            }
+            // if ($panenExists) {
+            //     // Tampilkan popup error jika tanggal sudah ada
+            //     $this->gagalPopUp([
+            //         'Tanggal panen sudah ada dengan jumlah panen sebanyak ' . $panenExists->jumlahPanen . '. Harap gunakan tanggal lain.',
+            //     ]);
+            //     return redirect()->back()->withInput();
+            // }
     
             // Ambil semua perubahan stok (termasuk panen yang sedang diubah)
             $stok = Stok::where('id', '!=', $panen->stok->id)

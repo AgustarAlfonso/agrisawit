@@ -62,14 +62,14 @@ class PenjualanController extends Controller
             ]);
     
             // Validasi jika ada tanggal yang sama
-            $penjualanExists = Penjualan::where('tanggalPenjualan', $request->tanggalPenjualan)->first();
-            if ($penjualanExists) {
-                // Call gagalPopUp() to flash error message for popup
-                $this->gagalPopUp([
-                    'Tanggal penjualan sudah ada. Harap gunakan tanggal lain. Data penjualan: ' . $penjualanExists->jumlahTerjual . ' kg',
-                ]);
-                return redirect()->back()->withInput();
-            }
+            // $penjualanExists = Penjualan::where('tanggalPenjualan', $request->tanggalPenjualan)->first();
+            // if ($penjualanExists) {
+            //     // Call gagalPopUp() to flash error message for popup
+            //     $this->gagalPopUp([
+            //         'Tanggal penjualan sudah ada. Harap gunakan tanggal lain. Data penjualan: ' . $penjualanExists->jumlahTerjual . ' kg',
+            //     ]);
+            //     return redirect()->back()->withInput();
+            // }
     
             // Ambil semua perubahan stok dan tambahkan data baru untuk simulasi
             $perubahanStok = Stok::orderBy('tanggalBerubah', 'asc')->get();
