@@ -16,7 +16,7 @@ class LogLogoutActivity
                 'user_id' => $user->id,
                 'user_name' => $user->name,
                 'user_role' => $user->role,
-                'activity_description' => 'User logged out',
+                'activity_description' => 'Berhasil logout',
             ]);
         }
     }

@@ -10,27 +10,28 @@ class PanenObserver
 {
     public function created(Panen $panen)
     {
-        $this->logActivity('created', $panen);
+        $this->logActivity('menambah', $panen);
     }
 
     public function updated(Panen $panen)
     {
-        $this->logActivity('updated', $panen);
+        $this->logActivity('mengubah', $panen);
     }
 
     public function deleted(Panen $panen)
     {
-        $this->logActivity('deleted', $panen);
+        $this->logActivity('menghapus', $panen);
     }
 
     protected function logActivity($action, $panen)
     {
         if (Auth::check()) {
+            $user = Auth::user();
             ActivityLog::create([
-                'user_id' => Auth::id(),
-                'user_name' => Auth::user()->name,
-                'user_role' => Auth::user()->role,
-                'activity_description' => "User $action a Panen record: " . json_encode($panen),
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_role' => $user->role,
+                'activity_description' => "$action panen seberat {$panen->jumlahPanen} kg",
             ]);
         }
     }

@@ -15,7 +15,7 @@ class LogLoginActivity
             'user_id' => $user->id,
             'user_name' => $user->name,
             'user_role' => $user->role,
-            'activity_description' => 'User logged in',
+            'activity_description' => 'Berhasil login',
         ]);
     }
 }

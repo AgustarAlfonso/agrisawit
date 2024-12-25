@@ -3,83 +3,36 @@
 namespace App\Observers;
 
 use App\Models\Penjualan;
-use App\Models\Stok;
+use App\Models\ActivityLog;
+use Illuminate\Support\Facades\Auth;
 
 class PenjualanObserver
 {
     public function created(Penjualan $penjualan)
     {
-        Stok::create([
-            'jenisPerubahan' => 'penjualan',
-            'jumlahPerubahan' => -$penjualan->jumlahTerjual,
-            'tanggalBerubah' => $penjualan->tanggalPenjualan,
-        ]);   
+        $this->logActivity('menambah', $penjualan);
     }
-
-        public function deleted(Penjualan $penjualan)
-        {
-            $this->hapusStok($penjualan->jumlahTerjual, $penjualan->tanggalPenjualan);
-        }
-        
 
     public function updated(Penjualan $penjualan)
     {
-        $originalTanggal = $penjualan->getOriginal('tanggalPenjualan');
-        $originalJumlah = $penjualan->getOriginal('jumlahTerjual');
-    
-        // Jika tanggal atau jumlah terjual berubah
-        if ($penjualan->isDirty('tanggalPenjualan') || $penjualan->isDirty('jumlahTerjual')) {
-            // Hapus stok dengan data lama
-            $this->hapusStok($originalJumlah, $originalTanggal);
-    
-            // Tambahkan atau perbarui stok dengan data baru
-            $this->updateStok(-$penjualan->jumlahTerjual, 'penjualan', $penjualan->tanggalPenjualan);
-        }
+        $this->logActivity('mengubah', $penjualan);
     }
-    
 
-    private function updateStok($jumlahPanen, $jenis, $tanggal)
+    public function deleted(Penjualan $penjualan)
     {
-        // Cari record stok terkait dengan penjualan
-        $stokRecord = Stok::where('jenisPerubahan', $jenis)
-                          ->where('tanggalBerubah', $tanggal)
-                          ->first();
-    
-        if ($stokRecord) {
-            // Update record stok jika sudah ada
-            $stokRecord->update([
-                'jumlahPerubahan' => $jumlahPanen,
-            ]);
-        } else {
-            // Tambahkan record stok baru jika belum ada
-            Stok::create([
-                'jenisPerubahan' => $jenis,
-                'jumlahPerubahan' => $jumlahPanen, // Placeholder, akan dihitung ulang nanti
-                'tanggalBerubah' => $tanggal,
+        $this->logActivity('menghapus', $penjualan);
+    }
+
+    protected function logActivity($action, $penjualan)
+    {
+        if (Auth::check()) {
+            $user = Auth::user();
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_role' => $user->role,
+                'activity_description' => "$action penjualan sebanyak {$penjualan->jumlahTerjual} unit dengan total harga Rp. {$penjualan->totalHarga}",
             ]);
         }
-    
-       
     }
-
- 
-
-    private function hapusStok($jumlahTerjual, $tanggal)
-    {
-        // Cari record stok terkait dengan penjualan berdasarkan jumlah dan tanggal lama
-        $stokRecord = Stok::where('jenisPerubahan', 'penjualan')
-                          ->where('jumlahPerubahan', -$jumlahTerjual) // Negatif karena penjualan
-                          ->where('tanggalBerubah', $tanggal)
-                          ->latest('id')
-                          ->first();
-    
-        if ($stokRecord) {
-            $stokRecord->delete(); // Hapus record stok terkait
-        }
-    }
-    
-
-    
-
-    
 }
