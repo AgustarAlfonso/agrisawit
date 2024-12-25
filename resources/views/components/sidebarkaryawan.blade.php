@@ -60,6 +60,13 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('lockscreen') }}"
+                    class="flex items-center px-3 py-2 rounded-lg hover:text-red-600">
+                    <img src="{{ asset('images/icon-lock.png') }}" alt="Logout Icon" class="w-6 h-6 mr-3 ml-1">
+                    Lock
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('logout') }}"
                     class="flex items-center px-3 py-2 ml-1 rounded-lg text-gray-400 hover:text-red-600">
                     <img src="{{ asset('images/icon-logout.png') }}" alt="Logout Icon" class="w-6 h-6 mr-3">

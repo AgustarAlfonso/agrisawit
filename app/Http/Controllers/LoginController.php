@@ -80,10 +80,12 @@ class LoginController extends Controller
         if (Hash::check($request->password, $user->password)) {
             // Memeriksa role dan mengarahkan pengguna ke dashboard yang sesuai
             if ($user->role == 'karyawan') {
-                session()->forget('locked'); // Menghapus session lock screen                return redirect()->route('dashboard.karyawan.index'); // halaman dashboard untuk karyawan
+                session()->forget('locked');
+                return redirect()->route(route: 'dashboard.karyawan.index'); // halaman dashboard untuk pemilik
+                // Menghapus session lock screen                return redirect()->route('dashboard.karyawan.index'); // halaman dashboard untuk karyawan
             } elseif ($user->role == 'pemilik') {
                 session()->forget('locked'); // Menghapus session lock screen                return redirect()->route('dashboard.karyawan.index'); // halaman dashboard untuk karyawan
-                return redirect()->route('dashboard.pemilik.index'); // halaman dashboard untuk pemilik
+                return redirect()->route(route: 'dashboard.pemilik.index'); // halaman dashboard untuk pemilik
             }
         }
     

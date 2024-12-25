@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'lockscreen.protected' => \App\Http\Middleware\LockScreenProtection::class,
+            'log.activity' => \App\Http\Middleware\LogActivity::class,
         ]);
        
     })
