@@ -12,17 +12,40 @@ class LogActivity
     {
         if (Auth::check()) {
             $path = $request->path();
-            $description = $this->mapRouteToDescription($path);
+            $method = $request->route()->getActionMethod(); // Mendapatkan metode controller yang dipanggil
+            
+            if ($this->isDisplayMethod($method)) { // Memeriksa apakah metode adalah halaman tampil
+                $description = $this->mapRouteToDescription($path);
 
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'user_name' => Auth::user()->name,
-                'user_role' => Auth::user()->role,
-                'activity_description' => $description,
-            ]);
+                ActivityLog::create([
+                    'user_id' => Auth::id(),
+                    'user_name' => Auth::user()->name,
+                    'user_role' => Auth::user()->role,
+                    'activity_description' => $description,
+                ]);
+            }
         }
 
         return $next($request);
+    }
+
+    private function isDisplayMethod($method)
+    {
+        // Daftar metode yang dianggap "halaman tampil"
+        $displayMethods = [
+            'tampilDashboardPemilik',
+            'tampilAkun',
+            'tampilLog',
+            'tampilLaporanPemilik',
+            'tampilDashboardKaryawan',
+            'tampilPanen',
+            'tampilPenjualan',
+            'tampilStok',
+            'tampilJadwal',
+            'tampilLaporanKaryawan',
+        ];
+
+        return in_array($method, $displayMethods);
     }
 
     private function mapRouteToDescription($path)
@@ -39,7 +62,6 @@ class LogActivity
             'dashboard/karyawan/jadwal' => 'akses jadwal',
             'dashboard/karyawan/laporan' => 'akses laporan karyawan',
             'dashboard/pemilik/log' => 'akses log ',
-            // Tambahkan path lainnya jika perlu
         ];
 
         foreach ($menuDescriptions as $menuPath => $description) {
@@ -48,7 +70,6 @@ class LogActivity
             }
         }
 
-        // Default jika tidak cocok
         return 'akses ' . $path;
     }
 }
