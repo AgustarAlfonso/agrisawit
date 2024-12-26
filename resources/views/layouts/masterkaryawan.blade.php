@@ -32,11 +32,9 @@
             @yield('content')
         </main>
     </div>
-
-        <!-- Menambahkan JS untuk idle timeout -->
         <script>
             let idleTime = 0;
-            const idleTimeout = 60; // waktu idle dalam detik (1 menit)
+            const idleTimeout = 18000; 
     
             function resetIdleTime() {
                 idleTime = 0;

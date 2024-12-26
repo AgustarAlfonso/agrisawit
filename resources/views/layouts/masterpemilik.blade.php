@@ -33,7 +33,7 @@
         
     <script>
         let idleTime = 0;
-        const idleTimeout = 30; // waktu idle dalam detik (1 menit)
+        const idleTimeout = 1800; // waktu idle dalam detik (1 menit)
 
         function resetIdleTime() {
             idleTime = 0;

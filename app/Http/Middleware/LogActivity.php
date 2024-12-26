@@ -38,6 +38,7 @@ class LogActivity
             'dashboard/karyawan/panen' => 'akses panen',
             'dashboard/karyawan/jadwal' => 'akses jadwal',
             'dashboard/karyawan/laporan' => 'akses laporan karyawan',
+            'dashboard/pemilik/log' => 'akses log ',
             // Tambahkan path lainnya jika perlu
         ];
 

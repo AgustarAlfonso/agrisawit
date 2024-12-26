@@ -4,6 +4,7 @@ use App\Http\Controllers\AkunController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PanenController;
 use App\Http\Controllers\PenjualanController;
@@ -34,7 +35,7 @@ Route::middleware(['auth', 'role:pemilik', 'lockscreen.protected', 'log.activity
     Route::get('/dashboard/pemilik/akun/hapus/{id}', [AkunController::class, 'hapusAkun'])->name('dashboard.pemilik.akun.hapus');
     Route::get ('/dashboard/pemilik/akun/ubah/{id}', [AkunController::class, 'ubahAkun'])->name('dashboard.pemilik.akun.ubah');
     Route::post ('/dashboard/pemilik/akun/ubah/submit/{id}', [AkunController::class, 'perbaruiDataAkun'])->name('dashboard.pemilik.akun.ubah.submit');
-
+    Route::get('/dashboard/pemilik/log', [LogController::class, 'tampilLog'])->name('dashboard.pemilik.log');
     Route::get('/dashboard/pemilik/laporan', [LaporanController::class, 'tampilLaporanPemilik'])->name('dashboard.pemilik.laporan');
     Route::get('/dashboard/pemilik/laporan/unduh', [LaporanController::class, 'unduhLaporanPemilik'])->name('dashboard.pemilik.laporan.unduh');
     Route::get('/dashboard/pemilik/laporan/preview', [LaporanController::class, 'previewLaporanPemilik'])->name('dashboard.pemilik.laporan.preview');

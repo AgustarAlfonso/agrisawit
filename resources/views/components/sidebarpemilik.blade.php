@@ -33,6 +33,15 @@
                 </a>
             </li>
             <li>
+                <a href="{{ route('dashboard.pemilik.log') }}"
+                    class="flex items-center px-3 py-2 rounded-lg 
+                    {{ request()->routeIs('dashboard.pemilik.log') ? 'bg-green-400 text-white' : 'text-gray-600 hover:text-green-600' }}">
+                    <img src="{{ request()->routeIs('dashboard.pemilik.log') ? asset('images/icon-logging-active.png') : asset('images/icon-logging.png') }}" 
+                         alt="Report Icon" class="w-6 h-6 mr-3">
+                    Activity log
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('lockscreen') }}"
                     class="flex items-center px-3 py-2 rounded-lg hover:text-red-600">
                     <img src="{{ asset('images/icon-lock.png') }}" alt="Logout Icon" class="w-6 h-6 mr-3 ml-1">
