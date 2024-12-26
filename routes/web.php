@@ -42,7 +42,7 @@ Route::middleware(['auth', 'role:pemilik', 'lockscreen.protected', 'log.activity
        
 });
 
-Route::middleware(['auth', 'role:karyawan', 'lockscreen.protected', 'log.activity'])->group(function () {
+Route::middleware(['auth', 'role:karyawan', 'lockscreen.protected', 'log.activity', 'jamkerja'])->group(function () {
     Route::get('/dashboard/karyawan/index', [DashboardController::class, 'tampilDashboardKaryawan'])->name('dashboard.karyawan.index');
 
     Route::get('/dashboard/karyawan/panen', [PanenController::class, 'tampilPanen'])->name('dashboard.karyawan.panen');

@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'lockscreen.protected' => \App\Http\Middleware\LockScreenProtection::class,
             'log.activity' => \App\Http\Middleware\LogActivity::class,
+            'jamkerja' => \App\Http\Middleware\JamKerjaMiddleware::class,
         ]);
        
     })
